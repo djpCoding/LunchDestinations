@@ -45,7 +45,7 @@ inspire11_cords = pd.DataFrame({"lat": [44.979087279569036], "lon": [-93.2717422
 def random_coffee():
     filtered_coffee = rest[(current_time > rest['OpenDT']) & (current_time < rest['CloseDT'])]
     filtered_coffee = filtered_coffee.loc[filtered_coffee["Categtory"]=="Coffee"]
-    if len(filtered_coffee.index):
+    if len(filtered_coffee.index) > 0:
         random_coffee_row = filtered_coffee.sample(n=1, replace=False)  
     else: 
         st.write("It looks like there are no open coffee shops right now. Sorry!")
