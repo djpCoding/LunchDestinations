@@ -1,0 +1,10 @@
+numpy
+pandas
+streamlit
+pydeck
+folium
+datetime
+pytz
+plotly
+plotly.express
+plotly.graph_objects

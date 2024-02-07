@@ -1,0 +1,143 @@
+import streamlit as st
+from datetime import datetime
+import os
+import pandas as pd
+import numpy as np
+import pydeck as pdk
+import folium
+from datetime import datetime
+import pytz
+from streamlit_folium import st_folium
+import plotly.express as px
+import plotly.graph_objects as go
+
+st.title("Minneapolis Restaurant Roulette")
+st.markdown("Unsure of where to eat lunch, grab a snack, or get a quick dinner? Use this restaurant roulette to find a new (or not so new) location for a meal close to the office!")
+
+
+
+# Define the current central US time for comaprison on luck params 
+def currenttimestamp():
+    date_format = '%Y-%m-%d %H:%M:%S'
+    now = datetime.now(pytz.timezone('US/Central'))
+    current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+    current_time = datetime.strptime(current_time, date_format)
+    return current_time
+current_time = currenttimestamp()
+
+# Load the data that was stored in the file and cache it. Only needed to load up once. 
+#@st.cache_data()
+def load_info():
+    rest = pd.read_csv("Restaurants.csv")
+    rest['Open'] = pd.to_datetime(rest['Open'])
+    rest['Close'] = pd.to_datetime(rest['Close'])
+    rest[["lat","lon"]] = rest["Coordinates"].str.split(", ", expand = True)
+    return rest
+rest = load_info()   
+
+# Load up the map for later use
+# Coordinates for downtown Minneapolis
+minneapolis_coords = pd.DataFrame({"lat": [44.979087279569036],"lon": [-93.2717422460245]})
+inspire11_cords = pd.DataFrame({"lat": [44.979087279569036], "lon": [-93.2717422460245]})
+#map_minneapolis = folium.Map(location=minneapolis_coords, zoom_start=14)
+#st.map(minneapolis_coords, zoom=13, size= 50)
+
+def random_coffee():
+    filtered_coffee = rest[(current_time > rest['Open']) & (current_time < rest['Close'])]
+    filtered_coffee = filtered_coffee.loc[filtered_coffee["Categtory"]=="Coffee"]
+    random_coffee_row = filtered_coffee.sample(n=1, replace=False)  
+    return random_coffee_row
+
+
+def random_lunch():
+    filtered_lunch = rest
+    filtered_lunch = filtered_lunch.loc[filtered_lunch["Categtory"]=="Fast casual"]
+    random_lunch_row = filtered_lunch.sample(n=1, replace=False)  
+    return random_lunch_row
+
+def map_render(lat, lon, name):
+    data = {'lat': lat, 'lon': lon, 'size': 500, "label": name}
+    df = pd.DataFrame(data)
+    df.loc[len(df.index)] = [44.979087279569036, -93.2717422460245, 500, "Inspire11"]
+    fig = px.scatter_mapbox(
+        df,
+        lat='lat',
+        lon='lon',
+        zoom=15,
+        height=600,
+    )
+    fig.update_layout(mapbox_style="carto-positron")
+    fig.update_traces(marker=dict(size=15))
+    fig.add_trace(go.Scattermapbox(mode='markers+text',
+        lat=df['lat'],
+        lon=df['lon'],
+        text=df['label'],
+        textfont=dict(size=12,color='green'),
+        textposition='bottom center',
+        showlegend=False
+        )
+    )
+    return st.plotly_chart(fig)
+
+
+def get_coffee():
+    coffee = random_coffee()
+    coffee[["Restaurant","Cuisine", "Building", "Level"]]
+    coffee_choice = coffee["Restaurant"].tolist()
+    address_coffee = coffee["Address"].tolist()
+    coffee_rest_link = coffee["Link"].tolist()
+    url = coffee_rest_link[0]
+    st.write("Check out the menu for %s" % coffee_choice[0], "here: %s" % url)
+    st.write("Here's the address if you need it: %s" % address_coffee[0] )
+    st.markdown("***HAVE A GOOD COFFEE THERE PARTNER!!*** :sunglasses:")
+    lat = pd.to_numeric(coffee['lat'], errors='coerce')
+    lon = pd.to_numeric(coffee['lon'], errors='coerce')
+    name = coffee["Restaurant"]
+    coffee_map = map_render(lat, lon, name)
+    st.write(coffee_map)
+
+
+def get_lunch():
+    lunch = random_lunch()
+    lunch[["Restaurant","Cuisine", "Building", "Level"]]
+    lunch_choice = lunch["Restaurant"].tolist()
+    address_lunch = lunch["Address"].tolist()
+    lunch_rest_link = lunch["Link"].tolist()
+    url = lunch_rest_link[0]
+    st.write("Check out the menu for %s" % lunch_choice[0], "here: %s" % url)
+    st.write("Here's the address if you need it: %s" % address_lunch[0] )
+    st.markdown("***HAVE A GOOD LUNCH THERE PARTNER!!*** :sunglasses:")
+    lat = pd.to_numeric(lunch['lat'], errors='coerce')
+    lon = pd.to_numeric(lunch['lon'], errors='coerce')
+    name = lunch["Restaurant"]
+    lunch_map = map_render(lat, lon, name)
+    lunch_map
+
+
+def main_mvp():
+    selection = st.selectbox("Select an Option", ["Options","I need Coffee", "Lunch Please!"])
+    if selection == "I need Coffee":
+        get_coffee()
+    elif selection == "Lunch Please!":
+        get_lunch()
+    else:
+        st.write("You'll need to make a selection to get this thing going")
+
+if __name__ == "__main__":
+    main_mvp()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
