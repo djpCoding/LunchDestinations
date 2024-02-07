@@ -41,17 +41,26 @@ rest = load_info()
 minneapolis_coords = pd.DataFrame({"lat": [44.979087279569036],"lon": [-93.2717422460245]})
 inspire11_cords = pd.DataFrame({"lat": [44.979087279569036], "lon": [-93.2717422460245]})
 
+
 def random_coffee():
     filtered_coffee = rest[(current_time > rest['OpenDT']) & (current_time < rest['CloseDT'])]
     filtered_coffee = filtered_coffee.loc[filtered_coffee["Categtory"]=="Coffee"]
-    random_coffee_row = filtered_coffee.sample(n=1, replace=False)  
+    if len(filtered_coffee.index):
+        random_coffee_row = filtered_coffee.sample(n=1, replace=False)  
+    else: 
+        st.write("It looks like there are no open coffee shops right now. Sorry!")
+        random_coffee_row = []
     return random_coffee_row
 
 
 def random_lunch():
     filtered_lunch = rest
     filtered_lunch = filtered_lunch.loc[filtered_lunch["Categtory"]=="Fast casual"]
-    random_lunch_row = filtered_lunch.sample(n=1, replace=False)  
+    if len(filtered_lunch) > 0:
+        random_lunch_row = filtered_lunch.sample(n=1, replace=False) 
+    else:
+        st.write("Looks like we don't have any lunch options right now.")
+        random_lunch_row = [] 
     return random_lunch_row
 
 def map_render(lat, lon, name):
@@ -83,43 +92,51 @@ def map_render(lat, lon, name):
 
 def get_coffee():
     coffee = random_coffee()
-#    st.table(coffee[["Restaurant","Cuisine", "Building", "Level"]])
-    st.markdown(coffee[["Restaurant","Cuisine", "Building", "Level","Open","Close"]].style.hide(axis="index").to_html(), unsafe_allow_html=True)
-    coffee_choice = coffee["Restaurant"].tolist()
-    address_coffee = coffee["Address"].tolist()
-    coffee_rest_link = coffee["Link"].tolist()
-    url = coffee_rest_link[0]
-    st.write("Check out the menu for %s" % coffee_choice[0], "here: %s" % url)
-    st.write("Here's the address if you need it: %s" % address_coffee[0] )
-    st.markdown("***HAVE A GOOD COFFEE THERE PARTNER!!*** :sunglasses:")
-    buttons = st.columns(3)
-    with buttons[1]:
-        st.button("Try Again")
-    lat = pd.to_numeric(coffee['lat'], errors='coerce')
-    lon = pd.to_numeric(coffee['lon'], errors='coerce')
-    name = coffee["Restaurant"]
-    coffee_map = map_render(lat, lon, name)
-    st.write(coffee_map)
+    if len(coffee) > 0: 
+        #    st.table(coffee[["Restaurant","Cuisine", "Building", "Level"]])
+        st.markdown(coffee[["Restaurant","Cuisine", "Building", "Level","Open","Close"]].style.hide(axis="index").to_html(), unsafe_allow_html=True)
+        coffee_choice = coffee["Restaurant"].tolist()
+        address_coffee = coffee["Address"].tolist()
+        coffee_rest_link = coffee["Link"].tolist()
+        url = coffee_rest_link[0]
+        st.write("Check out the menu for %s" % coffee_choice[0], "here: %s" % url)
+        st.write("Here's the address if you need it: %s" % address_coffee[0] )
+        st.markdown("***HAVE A GOOD COFFEE THERE PARTNER!!*** :sunglasses:")
+        buttons = st.columns(3)
+        with buttons[1]:
+            st.button("Try Again")
+        lat = pd.to_numeric(coffee['lat'], errors='coerce')
+        lon = pd.to_numeric(coffee['lon'], errors='coerce')
+        name = coffee["Restaurant"]
+        coffee_map = map_render(lat, lon, name)
+        st.write(coffee_map)
+        st.write("Sorry, looks like there are no open coffee shops in the area right now")
+    else:
+        st.write("Please try again later")
 
 
 def get_lunch():
     lunch = random_lunch()
-    st.markdown(lunch[["Restaurant","Cuisine", "Building", "Level","Open","Close"]].style.hide(axis="index").to_html(), unsafe_allow_html=True)
-    lunch_choice = lunch["Restaurant"].tolist()
-    address_lunch = lunch["Address"].tolist()
-    lunch_rest_link = lunch["Link"].tolist()
-    url = lunch_rest_link[0]
-    st.write("Check out the menu for %s" % lunch_choice[0], "here: %s" % url)
-    st.write("Here's the address if you need it: %s" % address_lunch[0] )
-    st.markdown("***HAVE A GOOD LUNCH THERE PARTNER!!*** :sunglasses:")
-    buttons = st.columns(3)
-    with buttons[1]:
-        st.button("Try Again")
-    lat = pd.to_numeric(lunch['lat'], errors='coerce')
-    lon = pd.to_numeric(lunch['lon'], errors='coerce')
-    name = lunch["Restaurant"]
-    lunch_map = map_render(lat, lon, name)
-    lunch_map
+#    if len(lunch)
+    if len(lunch) > 0: 
+        st.markdown(lunch[["Restaurant","Cuisine", "Building", "Level","Open","Close"]].style.hide(axis="index").to_html(), unsafe_allow_html=True)
+        lunch_choice = lunch["Restaurant"].tolist()
+        address_lunch = lunch["Address"].tolist()
+        lunch_rest_link = lunch["Link"].tolist()
+        url = lunch_rest_link[0]
+        st.write("Check out the menu for %s" % lunch_choice[0], "here: %s" % url)
+        st.write("Here's the address if you need it: %s" % address_lunch[0] )
+        st.markdown("***HAVE A GOOD LUNCH THERE PARTNER!!*** :sunglasses:")
+        buttons = st.columns(3)
+        with buttons[1]:
+            st.button("Try Again")
+        lat = pd.to_numeric(lunch['lat'], errors='coerce')
+        lon = pd.to_numeric(lunch['lon'], errors='coerce')
+        name = lunch["Restaurant"]
+        lunch_map = map_render(lat, lon, name)
+        lunch_map
+    else: 
+        st.write("Please try again later")
 
 
 
