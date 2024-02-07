@@ -55,29 +55,30 @@ def random_lunch():
     return random_lunch_row
 
 def map_render(lat, lon, name):
-    data = {'lat': lat, 'lon': lon, 'size': 500, "label": name}
-    df = pd.DataFrame(data)
-    df.loc[len(df.index)] = [44.979087279569036, -93.2717422460245, 500, "Inspire11"]
-    fig = px.scatter_mapbox(
-        df,
-        lat='lat',
-        lon='lon',
-        zoom=15,
-        height=600,
-    )
-    fig.update_layout(mapbox_style="carto-positron")
-    fig.update_traces(marker=dict(size=15))
-    fig.add_trace(go.Scattermapbox(mode='markers+text',
-        lat=df['lat'],
-        lon=df['lon'],
-        text=df['label'],
-        textfont=dict(size=12,color='green'),
-        textposition='bottom center',
-        showlegend=False
+        data = {'lat': lat, 'lon': lon, 'size': 500, "label": name}
+        df = pd.DataFrame(data)
+        df.loc[len(df.index)] = [44.979087279569036, -93.2717422460245, 500, "Inspire11"]
+        fig = px.scatter_mapbox(
+            df,
+            lat='lat',
+            lon='lon',
+            zoom=15,
+            height=600,
         )
-    )
-    fig.update_layout(hovermode=False)
-    return st.plotly_chart(fig)
+        fig.update_layout(mapbox_style="carto-positron")
+        fig.update_traces(marker=dict(size=15))
+        fig.add_trace(go.Scattermapbox(mode='markers+text',
+            lat=df['lat'],
+            lon=df['lon'],
+            text=df['label'],
+            textfont=dict(size=12,color='green'),
+            textposition='bottom center',
+            showlegend=False
+            )
+        )
+        fig.update_layout(hovermode=False)
+        return fig
+
 
 
 def get_coffee():
@@ -91,6 +92,9 @@ def get_coffee():
     st.write("Check out the menu for %s" % coffee_choice[0], "here: %s" % url)
     st.write("Here's the address if you need it: %s" % address_coffee[0] )
     st.markdown("***HAVE A GOOD COFFEE THERE PARTNER!!*** :sunglasses:")
+    buttons = st.columns(3)
+    with buttons[1]:
+        st.button("Try Again")
     lat = pd.to_numeric(coffee['lat'], errors='coerce')
     lon = pd.to_numeric(coffee['lon'], errors='coerce')
     name = coffee["Restaurant"]
@@ -108,6 +112,9 @@ def get_lunch():
     st.write("Check out the menu for %s" % lunch_choice[0], "here: %s" % url)
     st.write("Here's the address if you need it: %s" % address_lunch[0] )
     st.markdown("***HAVE A GOOD LUNCH THERE PARTNER!!*** :sunglasses:")
+    buttons = st.columns(3)
+    with buttons[1]:
+        st.button("Try Again")
     lat = pd.to_numeric(lunch['lat'], errors='coerce')
     lon = pd.to_numeric(lunch['lon'], errors='coerce')
     name = lunch["Restaurant"]
@@ -115,17 +122,9 @@ def get_lunch():
     lunch_map
 
 
-def main_mvp():
-    selection = st.selectbox("Select an Option", ["Options","I need Coffee", "Lunch Please!"])
-    if selection == "I need Coffee":
-        get_coffee()
-    elif selection == "Lunch Please!":
-        get_lunch()
-    else:
-        st.write("You'll need to make a selection to get this thing going")
 
-if __name__ == "__main__":
-    main_mvp()
+
+
 
 def main3():
 #    st.title("Streamlit Button Example")
@@ -148,14 +147,21 @@ def main3():
 
     # Display the result of the button click
     if st.session_state.button_clicked:
-        st.write("You clicked the button! Nice!")
+        st.write("You clicked the button! Nice! But wrong button!!")
+
+
+def main_mvp():
+    selection = st.selectbox("Select an Option", ["Options","I need Coffee... bad", "Lunch Please!"])
+    if selection == "I need Coffee... bad":
+        get_coffee()
+    elif selection == "Lunch Please!":
+        get_lunch()
+    else:
+        st.write("You'll need to make a selection to get this thing going")
+        main3()
 
 if __name__ == "__main__":
-    main3()
-
-
-
-
+    main_mvp()
 
 
 
