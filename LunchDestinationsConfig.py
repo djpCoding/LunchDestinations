@@ -29,8 +29,8 @@ current_time = currenttimestamp()
 #@st.cache_data()
 def load_info():
     rest = pd.read_csv("Restaurants.csv")
-    rest['Open'] = pd.to_datetime(rest['Open'])
-    rest['Close'] = pd.to_datetime(rest['Close'])
+    rest['OpenDT'] = pd.to_datetime(rest['Open'])
+    rest['CloseDT'] = pd.to_datetime(rest['Close'])
     rest[["lat","lon"]] = rest["Coordinates"].str.split(", ", expand = True)
     return rest
 rest = load_info()   
@@ -39,11 +39,9 @@ rest = load_info()
 # Coordinates for downtown Minneapolis
 minneapolis_coords = pd.DataFrame({"lat": [44.979087279569036],"lon": [-93.2717422460245]})
 inspire11_cords = pd.DataFrame({"lat": [44.979087279569036], "lon": [-93.2717422460245]})
-#map_minneapolis = folium.Map(location=minneapolis_coords, zoom_start=14)
-#st.map(minneapolis_coords, zoom=13, size= 50)
 
 def random_coffee():
-    filtered_coffee = rest[(current_time > rest['Open']) & (current_time < rest['Close'])]
+    filtered_coffee = rest[(current_time > rest['OpenDT']) & (current_time < rest['CloseDT'])]
     filtered_coffee = filtered_coffee.loc[filtered_coffee["Categtory"]=="Coffee"]
     random_coffee_row = filtered_coffee.sample(n=1, replace=False)  
     return random_coffee_row
@@ -82,7 +80,8 @@ def map_render(lat, lon, name):
 
 def get_coffee():
     coffee = random_coffee()
-    coffee[["Restaurant","Cuisine", "Building", "Level"]]
+#    st.table(coffee[["Restaurant","Cuisine", "Building", "Level"]])
+    st.markdown(coffee[["Restaurant","Cuisine", "Building", "Level","Open","Close"]].style.hide(axis="index").to_html(), unsafe_allow_html=True)
     coffee_choice = coffee["Restaurant"].tolist()
     address_coffee = coffee["Address"].tolist()
     coffee_rest_link = coffee["Link"].tolist()
@@ -99,7 +98,11 @@ def get_coffee():
 
 def get_lunch():
     lunch = random_lunch()
-    lunch[["Restaurant","Cuisine", "Building", "Level"]]
+ #   lunch['Open'] = lunch['Open'].apply(pd.to_datetime).dt.time
+#    lunch.loc[lunch['Open']] <= 1
+ #   lunch['Close'] = lunch['Close'].apply(pd.to_datetime).dt.time
+#    st.table(lunch[["Restaurant","Cuisine", "Building", "Level"]])
+    st.markdown(lunch[["Restaurant","Cuisine", "Building", "Level","Open","Close"]].style.hide(axis="index").to_html(), unsafe_allow_html=True)
     lunch_choice = lunch["Restaurant"].tolist()
     address_lunch = lunch["Address"].tolist()
     lunch_rest_link = lunch["Link"].tolist()
