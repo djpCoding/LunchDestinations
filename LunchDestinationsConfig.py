@@ -110,7 +110,6 @@ def get_coffee():
         name = coffee["Restaurant"]
         coffee_map = map_render(lat, lon, name)
         st.write(coffee_map)
-        st.write("Sorry, looks like there are no open coffee shops in the area right now")
     else:
         st.write("Please try again later")
 
