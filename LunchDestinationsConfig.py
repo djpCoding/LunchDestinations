@@ -11,8 +11,9 @@ from streamlit_folium import st_folium
 import plotly.express as px
 import plotly.graph_objects as go
 
+# st.image('https://raw.githubusercontent.com/djpCoding/LunchDestinations/main/Inspire11.png')
 st.title("Minneapolis Restaurant Roulette")
-st.markdown("Unsure of where to eat lunch, grab a snack, or get a quick dinner? Use this restaurant roulette to find a new (or not so new) location for a meal close to the office!")
+st.markdown("Unsure of where to eat lunch or grab a quick snack? Use this restaurant roulette to find a new (or not so new) location for an option close to the office!")
 
 
 
@@ -75,6 +76,7 @@ def map_render(lat, lon, name):
         showlegend=False
         )
     )
+    fig.update_layout(hovermode=False)
     return st.plotly_chart(fig)
 
 
@@ -98,10 +100,6 @@ def get_coffee():
 
 def get_lunch():
     lunch = random_lunch()
- #   lunch['Open'] = lunch['Open'].apply(pd.to_datetime).dt.time
-#    lunch.loc[lunch['Open']] <= 1
- #   lunch['Close'] = lunch['Close'].apply(pd.to_datetime).dt.time
-#    st.table(lunch[["Restaurant","Cuisine", "Building", "Level"]])
     st.markdown(lunch[["Restaurant","Cuisine", "Building", "Level","Open","Close"]].style.hide(axis="index").to_html(), unsafe_allow_html=True)
     lunch_choice = lunch["Restaurant"].tolist()
     address_lunch = lunch["Address"].tolist()
@@ -129,7 +127,31 @@ def main_mvp():
 if __name__ == "__main__":
     main_mvp()
 
+def main3():
+#    st.title("Streamlit Button Example")
 
+    # Initialize session state
+    if 'button_clicked' not in st.session_state:
+        st.session_state.button_clicked = False
+
+    # Create a button
+    things = st.columns(3)
+    with things[1]:
+        button_clicked = st.button("Click me!")
+
+    # Check if the button was clicked
+    if button_clicked:
+        if not st.session_state.button_clicked:
+            st.session_state.button_clicked = True
+        else:
+            st.session_state.button_clicked = False
+
+    # Display the result of the button click
+    if st.session_state.button_clicked:
+        st.write("You clicked the button! Nice!")
+
+if __name__ == "__main__":
+    main3()
 
 
 
