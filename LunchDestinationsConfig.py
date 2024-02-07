@@ -4,10 +4,10 @@ import os
 import pandas as pd
 import numpy as np
 import pydeck as pdk
-import folium
+#import folium
 from datetime import datetime
 import pytz
-from streamlit_folium import st_folium
+#from streamlit_folium import st_folium
 import plotly.express as px
 import plotly.graph_objects as go
 
