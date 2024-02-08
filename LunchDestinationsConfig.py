@@ -44,7 +44,7 @@ inspire11_cords = pd.DataFrame({"lat": [44.979087279569036], "lon": [-93.2717422
 
 def random_coffee():
     filtered_coffee = rest[(current_time > rest['OpenDT']) & (current_time < rest['CloseDT'])]
-    filtered_coffee = filtered_coffee.loc[filtered_coffee["Categtory"]=="Coffee"]
+    filtered_coffee = filtered_coffee.loc[filtered_coffee["Category"]=="Coffee"]
     if len(filtered_coffee.index) > 0:
         random_coffee_row = filtered_coffee.sample(n=1, replace=False)  
     else: 
@@ -55,7 +55,7 @@ def random_coffee():
 
 def random_lunch():
     filtered_lunch = rest
-    filtered_lunch = filtered_lunch.loc[filtered_lunch["Categtory"]=="Fast casual"]
+    filtered_lunch = filtered_lunch.loc[filtered_lunch["Category"]=="Fast casual"]
     if len(filtered_lunch) > 0:
         random_lunch_row = filtered_lunch.sample(n=1, replace=False) 
     else:
