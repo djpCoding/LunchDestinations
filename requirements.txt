@@ -6,3 +6,5 @@ folium
 datetime
 pytz
 plotly
+geopy
+geopandas
